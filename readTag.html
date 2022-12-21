@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <meta charset="UTF-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/3.0.0-rc.5/web3.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+      <link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
+
+
+      <title>Time Locked Wallet</title>
+
+
+
+      <style>       
+        hr{
+            height: 10px;
+            width: 50%;
+            background-color: white;
+            border: none;
+        }
+    </style>
+
+    
+</head>
+   
+   
+<body>
+   
+	  
+<div class="container">
+		
+	
+      
+	
+	    <section class="contract-section hidden" id="showGetTimeLockedWalletsResult">
+			
+        <div class="card card-inverse" style="background-color: #333; border-color: #333;">
+            <div class="card-block">
+              <br>
+
+              <h3 class="card-title" style="color:white;  text-align: center;">Funds locked in this wallet </h3>
+
+              <h1 class="card-title"  style="color:white; font-size:12vw;  text-align: center;">Ξ <i id="Balance"></i>  ETH</h1>
+              
+              <h5 class="card-text" style="color:white; text-align: center;" >Unlock Date and Time </h5>
+
+              <p class="card-text" style="color:white; text-align: center;" ><i id="UnlockDate"></i></p>
+
+              <br>
+
+              <hr>
+              
+              <br>
+              <h5 class="card-text" style="color:white; text-align: center;" >Contract ID</h5>
+              <p class="card-text" style="color:white; text-align: center;"><small><i id="walletID"></i></small></p>
+              <p class="card-text" style="color:white; text-align: center;" > <a id="myLink" style="color:orange;"></a></p>
+             
+
+
+
+              <br>
+              <h5 class="card-text" style="color:white;text-align: center;" >Owner Wallet ID</h5>
+              <p class="card-text" style="color:white;text-align: center;" ><small><i id="Owner"></i></small> </p>
+
+              <br>
+              <br>
+              <h5 class="card-text" style="color:white;text-align: center;" >Creator Wallet ID</h5>
+              <p class="card-text" style="color:white;text-align: center;" ><small><i id="Creator"></i></small></p>
+              <p class="card-text" style="color:white; text-align: center;" >Created : <i id="CreatedDate"></i> </p>
+
+              <br>
+
+              <br>
+              
+              <p class="card-text" style="color:white; text-align: center;" >Only the Owner Wallet ID can withdraw the funds. <br>
+              To withdraw the funds, go the the <a href="https://yodadex.com/index.html"  style="color:orange;">DAPP</a> 
+              and connect with the Owner Wallet. </p>
+
+              <br><br>
+
+
+            </div>
+        </div>
+
+
+
+
+
+		</section>
+
+        
+</div>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+<script>
+document.getElementById('showGetTimeLockedWalletsResult').setAttribute("style", "display:none"); 
+console.log("start"); 
+
+console.log("Get Wallet contract ID"); 
+
+
+const queryString = window.location.search;
+console.log(queryString);
+
+const urlParams = new URLSearchParams(queryString);
+
+const walletID = urlParams.get('walletID')
+
+console.log("WALLET ID PASS URL IS");
+console.log(walletID);
+
+$('#walletID').html(walletID);
+
+
+const web3 = new Web3(new Web3.providers.HttpProvider('https://eth-goerli.g.alchemy.com/v2/AhJgY8jwVd6KSxzAUdO3JCnJpPslipYM'));
+
+
+
+const infoABI = [
+   
+{
+		"constant": true,
+		"inputs": [],
+		"name": "info",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "address"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"name": "",
+				"type": "address"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"constant": true,
+		"inputs": [],
+		"name": "unlockDate",
+		"outputs": [
+			{
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"payable": false,
+		"stateMutability": "view",
+		"type": "function"
+	},
+
+
+];
+
+
+
+
+
+
+
+//const tokenContract = "0x8D70152B5d881867Cf7e9024Baa0FE89fEF8Fd79"
+const contract = new web3.eth.Contract(infoABI, walletID)
+console.log("call info function");
+
+async function info() 
+{
+    const result = await contract.methods.info().call();
+    // const formattedResult = web3.utils.fromWei(result, "ether");
+    console.log(result);
+
+        console.log('info is'); 
+        console.log(result);   
+        
+        
+        console.log('individual fields'); 
+        console.log('creator'); 
+        console.log(result[0]); 
+
+        console.log('owner'); 
+        console.log(result[1]); 
+
+        console.log('unlockDate'); 
+        console.log(result[2]); 
+
+        console.log('creastedAt'); 
+        console.log(result[3]);  
+
+        console.log('balance'); 
+        const etherValue = Web3.utils.fromWei(result[4], 'ether');
+        console.log(etherValue);
+
+        console.log('TIME CONVERSIONS Unlock Date'); 
+
+
+let dateOfUnlockUnixSecs =    result[2]*1000;  
+dateOfUnlock =  new Date(dateOfUnlockUnixSecs);
+
+var unlockDateMonth = dateOfUnlock.toLocaleDateString("default", {month:"short"}); 
+var unlockDateYear = dateOfUnlock.toLocaleDateString("default", {year:"numeric"}); 
+var unlockDateDay = dateOfUnlock.toLocaleDateString("default", {day:"numeric"}); 
+var unlockTime = dateOfUnlock.toLocaleTimeString("default");  
+
+
+
+
+console.log(unlockDateMonth); 
+console.log(unlockDateYear); 
+console.log(unlockDateDay); 
+console.log(unlockTime); 
+
+
+
+var finalUnlockDateTime = unlockDateMonth;
+finalUnlockDateTime =  finalUnlockDateTime.concat(" ");
+finalUnlockDateTime =  finalUnlockDateTime.concat(unlockDateDay);
+finalUnlockDateTime =  finalUnlockDateTime.concat(" ");
+finalUnlockDateTime =  finalUnlockDateTime.concat(unlockDateYear);
+finalUnlockDateTime =  finalUnlockDateTime.concat("   ");
+finalUnlockDateTime =  finalUnlockDateTime.concat(unlockTime);
+
+
+
+console.log('Converted FINAL UNLOCK');
+console.log(finalUnlockDateTime);
+
+
+
+
+
+
+console.log('TIME CONVERSIONS Creationg Date'); 
+
+
+let dateOfCreationUnixSecs =    result[3]*1000;  
+dateOfCreation=  new Date(dateOfCreationUnixSecs);
+
+
+
+var creationDateMonth = dateOfCreation.toLocaleDateString("default", {month:"short"}); 
+var creationDateYear = dateOfCreation.toLocaleDateString("default", {year:"numeric"}); 
+var creationDateDay = dateOfCreation.toLocaleDateString("default", {day:"numeric"}); 
+var creationTime = dateOfCreation.toLocaleTimeString("default");  
+
+
+
+console.log(creationTime); 
+console.log(creationDateMonth); 
+console.log(creationDateYear); 
+console.log(creationDateDay); 
+
+
+
+
+var finalCreationDateTime = creationDateMonth;
+finalCreationDateTime =  finalCreationDateTime.concat(" ");
+finalCreationDateTime =  finalCreationDateTime.concat(creationDateDay);
+finalCreationDateTime =  finalCreationDateTime.concat(" ");
+finalCreationDateTime =  finalCreationDateTime.concat(creationDateYear);
+finalCreationDateTime =  finalCreationDateTime.concat("    ");
+finalCreationDateTime =  finalCreationDateTime.concat(creationTime);
+
+
+
+
+console.log('Converted FINAL CREATION DATE');
+console.log(finalCreationDateTime);
+
+
+
+
+
+
+//    $('#Owner').html(result[0]);
+//    $('#Creator').html(result[1]);
+//    $('#UnlockDate').html(finalUnlockDateTime);
+//    $('#CreatedDate').html(finalCreationDateTime);
+//    $('#Balance').html(result[4]);
+
+console.log("Final Results");
+console.log("Owner");console.log(result[1]);
+console.log("Creator");console.log(result[0]);
+console.log("Unlock Date");console.log(finalUnlockDateTime);
+console.log("Creation Date");console.log(finalCreationDateTime);
+console.log("Balance");console.log(etherValue);
+
+
+var linkToEtherscan = "https://goerli.etherscan.io/address/";
+linkToEtherscan += walletID;
+
+console.log("LINK");console.log(linkToEtherscan);
+
+let link = document.getElementById('myLink');
+link.href = linkToEtherscan;
+link.target="_blank";
+link.innerText = 'View on Etherscan';
+
+
+
+
+document.getElementById('showGetTimeLockedWalletsResult').setAttribute("style", "display:block");
+
+$('#Owner').html(result[1]);
+$('#Creator').html(result[0]);
+$('#UnlockDate').html(finalUnlockDateTime);
+$('#CreatedDate').html(finalCreationDateTime);
+$('#Balance').html(etherValue);
+
+
+
+
+}
+
+info();
+
+
+</script>
+	  
+	 
+
+
+</body>
+</html>
